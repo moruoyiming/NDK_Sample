@@ -72,11 +72,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public native void putObject(Student student, String str);//传递引用类型，传递对象
 
-    public native void insertObject();
+    public native void insertObject();//凭空创建对象
 
-//    public native void testQuote();
+    public native void testQuote();//测试引用
 
-//    public native void delQuote();
+    public native void delQuote();//释放全局引用
 
     //提供函数给native层
     public int add(int number1, int number2) {
@@ -110,8 +110,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 insertObject();
                 break;
             case R.id.button4:
+                testQuote();
                 break;
             case R.id.button5:
+                delQuote();
                 break;
         }
     }

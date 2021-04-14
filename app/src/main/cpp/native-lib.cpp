@@ -170,4 +170,30 @@ Java_com_example_ndk_MainActivity_insertObject(JNIEnv *env, jobject thiz) {
     env->CallVoidMethod(studentObj,setName,nameValue);
     env->CallVoidMethod(studentObj,setAge,30);
 //    env->NewObject();//NewObject 实例化对象，会调用对象的构造函数
+
+    const char *personstr = "com/example/ndk/bean/Person";
+    jclass personClass = env->FindClass(personstr);
+    jobject personObj = env->AllocObject(personClass);
+    jmethodID setStudent = env->GetMethodID(personClass,"setStudent","(Lcom/example/ndk/bean/Student;)V");
+    env->CallVoidMethod(personObj,setStudent,studentObj);
+    //规范 释放
+    env->DeleteLocalRef(studentClass);
+    env->DeleteLocalRef(personClass);
+    env->DeleteLocalRef(studentObj);
+    env->DeleteLocalRef(personObj);
+
+}
+
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_MainActivity_testQuote(JNIEnv *env, jobject thiz) {
+
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_MainActivity_delQuote(JNIEnv *env, jobject thiz) {
+
+
 }
