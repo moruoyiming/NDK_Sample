@@ -4,13 +4,22 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+import com.example.ndk.bean.Student;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    public static final String TAG = MainActivity.class.getSimpleName();
+
+    private Button bt1, bt2, bt3, bt4, bt5;
 
     // Used to load the 'native-lib' library on application startup.
     static {
-        System.loadLibrary("native-lib");
+//        System.load("d://xxx/xxx/xx/native-lib");//这种是可以绝对路径的加载动态链接库文件
+        System.loadLibrary("native-lib"); //这种是从库目录遍历层级目录，去自动的寻找
     }
 
     static final int A = 12;
@@ -25,6 +34,16 @@ public class MainActivity extends AppCompatActivity {
         // Example of a call to a native method
         TextView tv = findViewById(R.id.sample_text);
         tv.setText(stringFromJNI());
+        bt1 = findViewById(R.id.button1);
+        bt1.setOnClickListener(this);
+        bt2 = findViewById(R.id.button2);
+        bt2.setOnClickListener(this);
+        bt3 = findViewById(R.id.button3);
+        bt3.setOnClickListener(this);
+        bt4 = findViewById(R.id.button4);
+        bt4.setOnClickListener(this);
+        bt5 = findViewById(R.id.button5);
+        bt5.setOnClickListener(this);
         changeName();
         changeAge();
         callAddMethod();
@@ -46,13 +65,55 @@ public class MainActivity extends AppCompatActivity {
 
     public static native void changeAge();
 
-    public  native void callAddMethod();
+    public native void callAddMethod();
 
+    //String 引用类型 数组
+    public native void testArrayAction(int count, String textInfo, int[] ints, String[] strs);
+
+    public native void putObject(Student student, String str);//传递引用类型，传递对象
+
+    public native void insertObject();
+
+//    public native void testQuote();
+
+//    public native void delQuote();
 
     //提供函数给native层
     public int add(int number1, int number2) {
         Log.i("sdfasf", (number1 + number2) + "");
         return number1 + number2;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.button1:
+                int[] ints = new int[]{1, 2, 3, 4, 5};
+                String[] strs = new String[]{"李小龙", "李连杰", "成龙"};
+                testArrayAction(99, "你好", ints, strs);
+                for (int anInt : ints) {
+                    Log.d(TAG, "test1:anInt" + anInt);
+                }
+                for (String st : strs) {
+                    Log.d(TAG, "test1:st" + st);
+                }
+                break;
+            case R.id.button2:
+                Student student = new Student();
+                student.name = "JRL";
+                student.age = 88;
+                putObject(student,"九阳神功");
+                Log.d(TAG, "student getName" + student.getName());
+                Log.d(TAG, "student getAge" + student.getAge()   );
+                break;
+            case R.id.button3:
+                insertObject();
+                break;
+            case R.id.button4:
+                break;
+            case R.id.button5:
+                break;
+        }
     }
 }
 

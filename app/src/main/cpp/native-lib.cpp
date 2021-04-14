@@ -79,5 +79,85 @@ Java_com_example_ndk_MainActivity_callAddMethod(JNIEnv *env, jobject clazz) {
     jmethodID j_mid = env->GetMethodID(j_cls, "add", "(II)I");
     //调用java函数
     jint sum = env->CallIntMethod(clazz, j_mid, 3, 3);
-    LOGD("sum result:%d",sum);
+    LOGD("sum result:%d", sum);
+}
+//jint = int
+//jstring = String
+//jintArray = int[]
+//jobjectArray = 引用类型对象[]
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_MainActivity_testArrayAction(JNIEnv *env, jobject thiz,
+                                                  jint count,
+                                                  jstring text_info,
+                                                  jintArray ints,
+                                                  jobjectArray strs) {
+    //1.基本数据类型 jint count
+    int countInt = count;
+    LOGD("参数一 countInt:%d", countInt);
+    const char *textInfo = env->GetStringUTFChars(text_info, NULL);
+    LOGD("参数二 textInfo:%s", textInfo);
+
+    //2.int数组转成 int*
+    int *jintArray = env->GetIntArrayElements(ints, NULL);
+    jsize size = env->GetArrayLength(ints);
+    for (int i = 0; i < size; ++i) {
+        *(jintArray + i) += 100;
+        LOGD("参数三 int[]:%d", *jintArray + i);
+    }
+
+    //JNIEnv *env == 操纵杆 JNI层
+    // 0:刷新Java数组 并释放C++层数组
+    // JNI_COMMIT：只提交 只刷新Java数组，不释放C++层数组
+    // JNI_ABORT: 只释放C++层数组
+    env->ReleaseIntArrayElements(ints, jintArray, 0);
+
+
+    //3. jobjectArray 代表是Java的引用类型数组
+    jsize jsize1 = env->GetArrayLength(strs);
+    for (int i = 0; i < jsize1; ++i) {
+        jstring jobj = static_cast<jstring>(env->GetObjectArrayElement(strs, i));
+        const char *jobjCharp = env->GetStringUTFChars(jobj, NULL);
+        LOGD("参数四 strs[]:%s", jobjCharp);
+        //释放jstring
+        env->ReleaseStringUTFChars(jobj, jobjCharp);
+    }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_MainActivity_putObject(JNIEnv *env, jobject thiz, jobject student,
+                                            jstring str) {
+    const char *strChar = env->GetStringUTFChars(str, NULL);
+    env->ReleaseStringUTFChars(str, strChar);
+//    1.寻找类
+    jclass studentClass = env->GetObjectClass(student);
+//    jclass studentClass = env->FindClass("com/example/ndk/bean/Student");
+//    2.Student类里面的函数规则 签名
+    jmethodID setName = env->GetMethodID(studentClass, "setName", "(Ljava/lang/String;)V");
+    jmethodID getName = env->GetMethodID(studentClass, "getName", "()Ljava/lang/String;");
+    jmethodID showInfo = env->GetStaticMethodID(studentClass, "showInfo", "(Ljava/lang/String;)V");
+    jmethodID setAge = env->GetMethodID(studentClass,"setAge", "(I)V");
+//    3.调用setName
+    jstring value = env->NewStringUTF("张三");
+    env->CallVoidMethod(student, setName, value);
+//    4.调用getName
+    jstring getNameResult = static_cast<jstring>(env->CallObjectMethod(student, getName));
+    const char *getNameValue = env->GetStringUTFChars(getNameResult, NULL);
+    LOGD("getNameResult:%s", getNameValue);
+//    5.调用showInfo
+    jstring info = env->NewStringUTF("北望气");
+    env->CallStaticVoidMethod(studentClass,showInfo,info);
+//    6.调用setAge
+    jint intValue = 23;
+    env->CallVoidMethod(student,setAge,intValue);
+
+}
+
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_MainActivity_insertObject(JNIEnv *env, jobject thiz) {
+    //1.通过包名+类名的方式 拿到Student class
+
 }
