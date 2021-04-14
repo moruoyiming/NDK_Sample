@@ -137,7 +137,7 @@ Java_com_example_ndk_MainActivity_putObject(JNIEnv *env, jobject thiz, jobject s
     jmethodID setName = env->GetMethodID(studentClass, "setName", "(Ljava/lang/String;)V");
     jmethodID getName = env->GetMethodID(studentClass, "getName", "()Ljava/lang/String;");
     jmethodID showInfo = env->GetStaticMethodID(studentClass, "showInfo", "(Ljava/lang/String;)V");
-    jmethodID setAge = env->GetMethodID(studentClass,"setAge", "(I)V");
+    jmethodID setAge = env->GetMethodID(studentClass, "setAge", "(I)V");
 //    3.调用setName
     jstring value = env->NewStringUTF("张三");
     env->CallVoidMethod(student, setName, value);
@@ -147,10 +147,10 @@ Java_com_example_ndk_MainActivity_putObject(JNIEnv *env, jobject thiz, jobject s
     LOGD("getNameResult:%s", getNameValue);
 //    5.调用showInfo
     jstring info = env->NewStringUTF("北望气");
-    env->CallStaticVoidMethod(studentClass,showInfo,info);
+    env->CallStaticVoidMethod(studentClass, showInfo, info);
 //    6.调用setAge
     jint intValue = 23;
-    env->CallVoidMethod(student,setAge,intValue);
+    env->CallVoidMethod(student, setAge, intValue);
 
 }
 
@@ -159,5 +159,15 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ndk_MainActivity_insertObject(JNIEnv *env, jobject thiz) {
     //1.通过包名+类名的方式 拿到Student class
-
+    const char *studentstr = "com/example/ndk/bean/Student";
+    jclass studentClass = env->FindClass(studentstr);
+    //2.通过student的class 实例化此Student对象 C++ new
+    jobject studentObj = env->AllocObject(studentClass);//AllocObject 只实例化对象，不会调用对象的构造函数
+    //3.函数规则
+    jmethodID setName = env->GetMethodID(studentClass,"setName","(Ljava/lang/String;)V");
+    jmethodID setAge = env->GetMethodID(studentClass,"setAge", "(I)V");
+    jstring nameValue = env->NewStringUTF("东方不败");
+    env->CallVoidMethod(studentObj,setName,nameValue);
+    env->CallVoidMethod(studentObj,setAge,30);
+//    env->NewObject();//NewObject 实例化对象，会调用对象的构造函数
 }
