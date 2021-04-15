@@ -5,7 +5,7 @@
 
 #define TAG "JNILOG"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,TAG,__VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR,TAG,__VA_ARGS__)
 
 
 extern "C" JNIEXPORT jstring JNICALL
@@ -155,6 +155,7 @@ Java_com_example_ndk_MainActivity_putObject(JNIEnv *env, jobject thiz, jobject s
 }
 
 
+// 局部引用  全局引用
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ndk_MainActivity_insertObject(JNIEnv *env, jobject thiz) {
@@ -164,36 +165,72 @@ Java_com_example_ndk_MainActivity_insertObject(JNIEnv *env, jobject thiz) {
     //2.通过student的class 实例化此Student对象 C++ new
     jobject studentObj = env->AllocObject(studentClass);//AllocObject 只实例化对象，不会调用对象的构造函数
     //3.函数规则
-    jmethodID setName = env->GetMethodID(studentClass,"setName","(Ljava/lang/String;)V");
-    jmethodID setAge = env->GetMethodID(studentClass,"setAge", "(I)V");
+    jmethodID setName = env->GetMethodID(studentClass, "setName", "(Ljava/lang/String;)V");
+    jmethodID setAge = env->GetMethodID(studentClass, "setAge", "(I)V");
     jstring nameValue = env->NewStringUTF("东方不败");
-    env->CallVoidMethod(studentObj,setName,nameValue);
-    env->CallVoidMethod(studentObj,setAge,30);
+    env->CallVoidMethod(studentObj, setName, nameValue);
+    env->CallVoidMethod(studentObj, setAge, 30);
 //    env->NewObject();//NewObject 实例化对象，会调用对象的构造函数
 
     const char *personstr = "com/example/ndk/bean/Person";
     jclass personClass = env->FindClass(personstr);
     jobject personObj = env->AllocObject(personClass);
-    jmethodID setStudent = env->GetMethodID(personClass,"setStudent","(Lcom/example/ndk/bean/Student;)V");
-    env->CallVoidMethod(personObj,setStudent,studentObj);
+    jmethodID setStudent = env->GetMethodID(personClass, "setStudent",
+                                            "(Lcom/example/ndk/bean/Student;)V");
+    env->CallVoidMethod(personObj, setStudent, studentObj);
     //规范 释放
     env->DeleteLocalRef(studentClass);
     env->DeleteLocalRef(personClass);
     env->DeleteLocalRef(studentObj);
     env->DeleteLocalRef(personObj);
 
+
+    //TODO 局部引用 jobject jclass jstring  【函数弹栈后，会自动释放】
 }
+
+jclass dogClass;//这个是局部引用，不是全局引用
 
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ndk_MainActivity_testQuote(JNIEnv *env, jobject thiz) {
+    if (NULL == dogClass) {
+        const char *dogClassChar = "com/example/ndk/bean/Dog";
+        //TODO 局部引用
+//        dogClass = env->FindClass(dogClassChar);
+        //TODO 升级全局引用， JNI函数结束 不释放dogClass引用。
+        //类似 C++对象 new ，需要手动delete
+        jclass temp = env->FindClass(dogClassChar);
+        dogClass = static_cast<jclass>(env->NewGlobalRef(temp));//提升全局引用
+//        释放class
+        env->DeleteLocalRef(temp);
+    }
+    jmethodID init = env->GetMethodID(dogClass, "<init>", "()V");
+    jobject dogObject = env->NewObject(dogClass, init);
 
-}
+    init = env->GetMethodID(dogClass, "<init>", "(I)V");
+    dogObject = env->NewObject(dogClass, init, 100);
+
+    init = env->GetMethodID(dogClass, "<init>", "(ILjava/lang/String;)V");
+    jstring name = env->NewStringUTF("dsfsdfsd");
+    dogObject = env->NewObject(dogClass, init, 100, name);
+
+    env->DeleteLocalRef(dogObject);
+
+}//JNI函数结束，会释放局部引用，dogClass虽然会被释放，但是还不等于NULL，只是一个悬空指针。所以再次调用函数，进不去if语句中
+
+// 可以在这个类中声明，另外一个类去实现
+extern int age;//声明age
+extern void show();//声明函数
+
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ndk_MainActivity_delQuote(JNIEnv *env, jobject thiz) {
-
-
+    if (dogClass != NULL) {
+        env->DeleteGlobalRef(dogClass);
+        dogClass = NULL;//指向NULL 避免成为悬空指针
+        LOGE("全局引用释放完毕，上面的按钮已经失去了全局引用，再次点击会报错！");
+    }
+    show();
 }
