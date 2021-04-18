@@ -2,6 +2,7 @@ package com.example.ndk;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,7 +15,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
-    private Button bt1, bt2, bt3, bt4, bt5;
+    private Button bt1, bt2, bt3, bt4, bt5,bt6;
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -44,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt4.setOnClickListener(this);
         bt5 = findViewById(R.id.button5);
         bt5.setOnClickListener(this);
+
+        bt6 = findViewById(R.id.button6);
+        bt6.setOnClickListener(this);
         changeName();
         changeAge();
         callAddMethod();
@@ -114,6 +118,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.button5:
                 delQuote();
+                break;
+            case R.id.button6:
+                Intent intent =new Intent(MainActivity.this,ChangeVoiceActivity.class);
+                startActivity(intent);
                 break;
         }
     }
