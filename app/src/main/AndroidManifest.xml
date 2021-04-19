@@ -23,6 +23,10 @@
         <activity android:name=".DynamicActivity">
 
         </activity>
+
+        <activity android:name=".MainActivity2">
+
+        </activity>
     </application>
 
 </manifest>

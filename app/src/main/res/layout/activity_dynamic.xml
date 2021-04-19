@@ -2,5 +2,38 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="动态注册 的 点击事件一"
+        android:onClick="dynamic01"
+        />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="动态注册 的 点击事件二"
+        android:onClick="dynamic02"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="JNI线程 的 点击事件"
+        android:onClick="nativeCallJava"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="纠结纠结细节"
+        android:onClick="clickMethod4"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="跳转到下一个组件，必须是同一次运行时操作"
+        android:onClick="clickMethod5"
+        />
 </RelativeLayout>

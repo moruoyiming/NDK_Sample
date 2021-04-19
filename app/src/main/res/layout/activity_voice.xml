@@ -6,7 +6,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="hello，同学们，大家好，欢迎来到享学课堂，我是今天的Derry老师"
+        android:text="变声功能"
         android:textColor="#f00"
         android:textSize="20dp"
         android:layout_marginTop="40dp"
