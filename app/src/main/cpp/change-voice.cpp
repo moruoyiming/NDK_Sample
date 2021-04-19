@@ -110,4 +110,12 @@ Java_com_example_ndk_ChangeVoiceActivity_voiceChangeNative
     system->release();
     env->ReleaseStringUTFChars(path, path_);
 
+
+//    const char *charP = "com/example/ndk/ChangeVoiceActivity";
+//    jclass jclass1 = env->FindClass(charP);
+    jclass jclass1 = env->GetObjectClass(thiz);
+    jmethodID jmethodId = env->GetMethodID(jclass1, "playerEnd", "(Ljava/lang/String;)V");
+    jstring jstring1 = env->NewStringUTF("播放完毕了！");
+    env->CallVoidMethod(thiz, jmethodId, jstring1);
+
 }
