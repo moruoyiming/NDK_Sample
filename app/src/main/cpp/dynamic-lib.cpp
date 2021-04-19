@@ -105,14 +105,15 @@ void *myThreadTaskAction(void *pVoid) {// 当前是异步线程
     // JNIEnv *env
     // jobject thiz   OK
 
-    MyContext * myContext = static_cast<MyContext *>(pVoid);
+    MyContext *myContext = static_cast<MyContext *>(pVoid);
 
     // jclass mainActivityClass = myContext->jniEnv->FindClass(mainActivityClassName); // 不能跨线程 ，会奔溃
     // mainActivityClass = myContext->jniEnv->GetObjectClass(myContext->instance); // 不能跨线程 ，会奔溃
 
     // TODO 解决方式 （安卓进程只有一个 JavaVM，是全局的，是可以跨越线程的）
-    JNIEnv * jniEnv = nullptr; // 全新的JNIEnv  异步线程里面操作
-    jint attachResult = ::mJavaVm->AttachCurrentThread(&jniEnv, nullptr); // 附加当前异步线程后，会得到一个全新的 env，此env相当于是子线程专用env
+    JNIEnv *jniEnv = nullptr; // 全新的JNIEnv  异步线程里面操作
+    jint attachResult = ::mJavaVm->AttachCurrentThread(&jniEnv,
+                                                       nullptr); // 附加当前异步线程后，会得到一个全新的 env，此env相当于是子线程专用env
     if (attachResult != JNI_OK) {
         return 0; // 附加失败，返回了
     }
@@ -137,7 +138,8 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ndk_DynamicActivity_nativeThread(JNIEnv *env, jobject thiz) {
     pthread_t pid;
-    pthread_create(&pid, nullptr, 0, nullptr);
+    pthread_create(&pid, nullptr, myThreadTaskAction, nullptr);
+    pthread_join(pid, nullptr);
 }
 
 
