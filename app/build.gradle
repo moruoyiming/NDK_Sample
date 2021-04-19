@@ -14,11 +14,23 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        //TODO 第四步
         externalNativeBuild {
             cmake {
-                cppFlags ""
+//                cppFlags "" //默认五大平台
+                //指定CPU架构，Cmake的本地库，例如：native-lib --》armeabi-v7a
+                //本地只处理armeabi-v7a
+                abiFilters "armeabi-v7a"
             }
         }
+
+        //TODO 第五步
+        //指定CPU架构，打入APK lib/CPU平台
+        ndk{
+            abiFilters "armeabi-v7a"
+        }
+
     }
 
     buildTypes {
@@ -33,6 +45,9 @@ android {
             version "3.10.2"
         }
     }
+
+    //sourceSet 可以修改jniLibs目录
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -44,6 +59,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    //TODO 第六步 初始化
+    implementation files('libs/fmod.jar')
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
