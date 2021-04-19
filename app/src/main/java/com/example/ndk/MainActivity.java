@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
-    private Button bt1, bt2, bt3, bt4, bt5,bt6;
+    private Button bt1, bt2, bt3, bt4, bt5, bt6, bt7;
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -48,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         bt6 = findViewById(R.id.button6);
         bt6.setOnClickListener(this);
+
+        bt7 = findViewById(R.id.button7);
+        bt7.setOnClickListener(this);
         changeName();
         changeAge();
         callAddMethod();
@@ -106,9 +109,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Student student = new Student();
                 student.name = "JRL";
                 student.age = 88;
-                putObject(student,"九阳神功");
+                putObject(student, "九阳神功");
                 Log.d(TAG, "student getName" + student.getName());
-                Log.d(TAG, "student getAge" + student.getAge()   );
+                Log.d(TAG, "student getAge" + student.getAge());
                 break;
             case R.id.button3:
                 insertObject();
@@ -120,11 +123,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 delQuote();
                 break;
             case R.id.button6:
-                Intent intent =new Intent(MainActivity.this,ChangeVoiceActivity.class);
+                Intent intent = new Intent(MainActivity.this, ChangeVoiceActivity.class);
                 startActivity(intent);
                 break;
             case R.id.button7:
-                Intent dy =new Intent(MainActivity.this,DynamicActivity.class);
+                Intent dy = new Intent(MainActivity.this, DynamicActivity.class);
                 startActivity(dy);
                 break;
         }
