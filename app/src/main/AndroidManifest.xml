@@ -20,6 +20,9 @@
         <activity android:name=".ChangeVoiceActivity">
 
         </activity>
+        <activity android:name=".DynamicActivity">
+
+        </activity>
     </application>
 
 </manifest>

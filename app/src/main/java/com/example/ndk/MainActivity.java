@@ -123,6 +123,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent =new Intent(MainActivity.this,ChangeVoiceActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.button7:
+                Intent dy =new Intent(MainActivity.this,DynamicActivity.class);
+                startActivity(dy);
+                break;
         }
     }
 }
