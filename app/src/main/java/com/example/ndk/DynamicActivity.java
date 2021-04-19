@@ -42,15 +42,16 @@ public class DynamicActivity extends Activity {
 
     public native String stringFromJNI();//默认生成的，起始也是静态注册方式
 
-    public native void staticRigster();//静态注册
+    public native void staticRegister();//静态注册
 
-    public native void dynamicRigster();//动态注册
+    public native void dynamicRegister();//动态注册
 
-    public native int dynamicRigster2(String valueStr);//动态注册
+    public native int dynamicRegister2(String valueStr);//动态注册
 
     //第二部分 JNI线程区域
 
     public native void nativeThread();//Java层调用Native层的函数，完成JNI线程
+
     public native void closeThread(); // 释放全局引用
 
     //第三部分
@@ -72,12 +73,12 @@ public class DynamicActivity extends Activity {
 
     // 动态注册 的 点击事件1
     public void dynamic01(View view) {
-        dynamicRigster();
+        dynamicRegister();
     }
 
     // 动态注册 的 点击事件2
     public void dynamic02(View view) {
-        int result = dynamicRigster2("神照功");
+        int result = dynamicRegister2("神照功");
         Toast.makeText(this, "result:" + result, Toast.LENGTH_SHORT).show();
     }
 
@@ -106,6 +107,7 @@ public class DynamicActivity extends Activity {
     public void clickMethod5(View view) {
         startActivity(new Intent(this, MainActivity2.class));
     }
+
     /**
      * TODO 下面是 被native代码调用的 Java方法
      * 第二部分 JNI线程

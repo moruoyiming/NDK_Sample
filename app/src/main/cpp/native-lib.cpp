@@ -17,21 +17,20 @@ Java_com_example_ndk_MainActivity_stringFromJNI(
 }
 
 //必须采用c的编译方式，请看JNIEnv内部源码
-extern "C"
-JNIEXPORT //标记该方法可以被外部调用
-jstring //Java 与 Natvie 转换使用
-JNICALL //关键字 JNI标记
-
-//JNIEnv * env JNI:的桥梁环境
-
+//JNIEXPORT 标记该方法可以被外部调用
+//jstring Java 与 Natvie 转换使用
+//关键字 JNI标记
 //jobject thiz 谁调用该方法，该对象就是谁的实例
 //jclass clazz 谁调用该方法，该class就是谁的class
-com_example_ndk_MainActivity_getStringPWD(JNIEnv *env, jobject thiz) {
+//JNIEnv * env JNI:的桥梁环境
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_example_ndk_MainActivity_getStringPWD(JNIEnv *env, jobject thiz) {
     //无论是C还是C++ 最终是调用到C的JNINativeInterface，所以必须采用C的方式extern "C"
+    //静态函数
+}
 
-
-//静态函数
-}extern "C"
+extern "C"
 JNIEXPORT jstring JNICALL
 Java_com_example_ndk_MainActivity_getStringPWD2(JNIEnv *env, jclass clazz) {
 }
