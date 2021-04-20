@@ -1,6 +1,5 @@
 package com.example.ndk;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,8 +9,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class DynamicActivity extends Activity {
+public class DynamicActivity extends AppCompatActivity {
 
     private final String TAG = DynamicActivity.class.getSimpleName();
 

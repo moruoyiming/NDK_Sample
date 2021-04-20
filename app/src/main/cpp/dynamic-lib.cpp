@@ -176,7 +176,7 @@ void * run(void *){//native的自线程 env 地址 和 Java的自线程env地址
     LOGE("run jvm地址:%p,  当前run函数的newEnv地址:%p \n", ::mJavaVm, newEnv);
 
     ::mJavaVm->DetachCurrentThread();
-
+    return nullptr;
 }
 
 extern "C"
@@ -218,7 +218,7 @@ Java_com_example_ndk_DynamicActivity_staticFun4(JNIEnv *env, jclass clazz) {
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_derry_as_1jni_1project_MainActivity2_nativeFun5(JNIEnv *env, jobject job) {
+Java_com_example_ndk_MainActivity2_nativeFun5(JNIEnv *env, jobject job) {
     JavaVM * javaVm = nullptr;
     env->GetJavaVM(&javaVm);
 
