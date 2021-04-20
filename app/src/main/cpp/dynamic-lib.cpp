@@ -1,7 +1,7 @@
 #include <jni.h>
 #include <string>
 #include <android/log.h>
-#include <pthread.h>
+#include <pthread.h>//在AS上 pthread 不需额外配置
 
 #define TAG "JNILOG"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,TAG,__VA_ARGS__)
@@ -137,43 +137,94 @@ void *myThreadTaskAction(void *pVoid) {// 当前是异步线程
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ndk_DynamicActivity_nativeThread(JNIEnv *env, jobject thiz) {
+    /*  pthread_t pid;
+      pthread_create(&pid, nullptr, myThreadTaskAction, nullptr);
+      pthread_join(pid, nullptr);*/
+    MyContext *myContext = new MyContext;
+    myContext->jniEnv = env;
+//  myContext->instance = thiz;//默认是局部引用，会崩溃
+    myContext->instance = env->NewGlobalRef(thiz);//提升全局引用
     pthread_t pid;
-    pthread_create(&pid, nullptr, myThreadTaskAction, nullptr);
+    pthread_create(&pid, nullptr, myThreadTaskAction, myContext);
     pthread_join(pid, nullptr);
+
 }
 
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ndk_DynamicActivity_closeThread(JNIEnv *env, jobject thiz) {
-    // TODO: implement closeThread()
+    // 做释放工作
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ndk_DynamicActivity_nativeFun1(JNIEnv *env, jobject thiz) {
-    // TODO: implement nativeFun1()
+    JavaVM *javaVm = nullptr;
+    env->GetJavaVM(&javaVm);
+
+    // 打印：当前函数env地址， 当前函数jvm地址， 当前函数job地址,  JNI_OnLoad的jvm地址
+    LOGE("nativeFun1 当前函数env地址%p,  当前函数jvm地址:%p,  当前函数job地址:%p, JNI_OnLoad的jvm地址:%p\n", env, javaVm,
+         thiz, ::mJavaVm);
+}
+
+void * run(void *){//native的自线程 env 地址 和 Java的自线程env地址，一样吗？不一样的
+    JNIEnv * newEnv = nullptr;
+    ::mJavaVm->AttachCurrentThread(&newEnv, nullptr);
+    // 打印：当前函数env地址， 当前函数jvm地址， 当前函数clazz地址,  JNI_OnLoad的jvm地址
+
+    LOGE("run jvm地址:%p,  当前run函数的newEnv地址:%p \n", ::mJavaVm, newEnv);
+
+    ::mJavaVm->DetachCurrentThread();
+
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ndk_DynamicActivity_nativeFun2(JNIEnv *env, jobject thiz) {
-    // TODO: implement nativeFun2()
+    JavaVM *javaVm = nullptr;
+    env->GetJavaVM(&javaVm);
+
+    // 打印：当前函数env地址， 当前函数jvm地址， 当前函数job地址,  JNI_OnLoad的jvm地址
+    LOGE("nativeFun2 当前函数env地址%p,  当前函数jvm地址:%p,  当前函数job地址:%p, JNI_OnLoad的jvm地址:%p\n", env, javaVm,
+         thiz, ::mJavaVm);
+
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_ndk_DynamicActivity_staticFun3(JNIEnv *env, jclass clazz) {
-    // TODO: implement staticFun3()
+    JavaVM * javaVm = nullptr;
+    env->GetJavaVM(&javaVm);
+
+    // 打印：当前函数env地址， 当前函数jvm地址， 当前函数clazz地址,  JNI_OnLoad的jvm地址
+    LOGE("nativeFun3 当前函数env地址%p,  当前函数jvm地址:%p,  当前函数clazz地址:%p, JNI_OnLoad的jvm地址:%p\n", env, javaVm, clazz, ::mJavaVm);
+
+    // 调用run
+    pthread_t pid;
+    pthread_create(&pid, nullptr, run, nullptr);
+}
+
+// Java子线程调用的
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_DynamicActivity_staticFun4(JNIEnv *env, jclass clazz) {
+    JavaVM * javaVm = nullptr;
+    env->GetJavaVM(&javaVm);
+
+    // 打印：当前函数env地址， 当前函数jvm地址， 当前函数clazz地址,  JNI_OnLoad的jvm地址
+    LOGE("nativeFun4 当前函数env地址%p,  当前函数jvm地址:%p,  当前函数clazz地址:%p, JNI_OnLoad的jvm地址:%p\n", env, javaVm, clazz, ::mJavaVm);
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_ndk_DynamicActivity_staticFun4(JNIEnv *env, jclass clazz) {
-    // TODO: implement staticFun4()
+Java_com_derry_as_1jni_1project_MainActivity2_nativeFun5(JNIEnv *env, jobject job) {
+    JavaVM * javaVm = nullptr;
+    env->GetJavaVM(&javaVm);
+
+    // 打印：当前函数env地址， 当前函数jvm地址， 当前函数clazz地址,  JNI_OnLoad的jvm地址
+    LOGE("nativeFun5 当前函数env地址%p,  当前函数jvm地址:%p,  当前函数job地址:%p, JNI_OnLoad的jvm地址:%p\n", env, javaVm, job, ::mJavaVm);
 }
-
-
 
 // TODO 纠结细节的结论：
 // 1. JavaVM全局，绑定当前进程， 只有一个地址
