@@ -233,3 +233,31 @@ Java_com_example_ndk_MainActivity_delQuote(JNIEnv *env, jobject thiz) {
     }
     show();
 }
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_example_ndk_KotlinActivity_stringFromJNIKotlin(JNIEnv *env, jobject thiz) {
+}
+
+int compare(const jint *number1, const jint *number2) {
+    return *number1 - *number2;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_KotlinActivity_sort(JNIEnv *env, jobject thiz, jintArray arr) {
+    jint *intArray = env->GetIntArrayElements(arr, nullptr);
+    int length = env->GetArrayLength(arr);
+    //NDK 很大的工具链(Java JNI . C++ stdLib)
+    qsort(intArray, length, sizeof(int),
+          reinterpret_cast<int (*)(const void *, const void *)>(compare));
+
+    env->ReleaseIntArrayElements(arr,intArray,0);
+
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_KotlinActivity_initStaticCache(JNIEnv *env, jobject thiz) {
+    // TODO: implement initStaticCache()
+}
