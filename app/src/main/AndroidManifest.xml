@@ -31,6 +31,14 @@
         <activity android:name=".KotlinActivity">
 
         </activity>
+
+        <activity android:name=".StaticCacheActivity">
+
+        </activity>
+
+        <activity android:name=".ExceptionActivity">
+
+        </activity>
     </application>
 
 </manifest>

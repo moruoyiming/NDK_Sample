@@ -252,12 +252,106 @@ Java_com_example_ndk_KotlinActivity_sort(JNIEnv *env, jobject thiz, jintArray ar
     qsort(intArray, length, sizeof(int),
           reinterpret_cast<int (*)(const void *, const void *)>(compare));
 
-    env->ReleaseIntArrayElements(arr,intArray,0);
+    env->ReleaseIntArrayElements(arr, intArray, 0);
 
 }
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_ndk_KotlinActivity_initStaticCache(JNIEnv *env, jobject thiz) {
-    // TODO: implement initStaticCache()
+Java_com_example_ndk_StaticCacheActivity_localCache(JNIEnv *env, jclass clazz, jstring name) {
+    //像 opencv webrtc 大量使用静态缓存
+
+    //非静态缓存
+    jfieldID jfieldId = nullptr;
+    if (jfieldId == nullptr) {
+        jfieldId = env->GetStaticFieldID(clazz, "name", "Ljava/lang/String;");
+    } else {
+        LOGE("空的");
+    }
+    env->SetStaticObjectField(clazz, jfieldId, name);
+    jfieldId = nullptr;
+}
+
+static jfieldID f_name1 = nullptr;
+static jfieldID f_name2 = nullptr;
+static jfieldID f_name3 = nullptr;
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_StaticCacheActivity_initStaticCache(JNIEnv *env, jclass clazz) {
+    //像 opencv webrtc 大量使用静态缓存
+    f_name1 = env->GetStaticFieldID(clazz, "name1", "Ljava/lang/String;");
+    f_name2 = env->GetStaticFieldID(clazz, "name2", "Ljava/lang/String;");
+    f_name3 = env->GetStaticFieldID(clazz, "name3", "Ljava/lang/String;");
+
+}
+
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_StaticCacheActivity_useStaticCache(JNIEnv *env, jclass clazz, jstring name) {
+    //不会反复调用GetStaticFieldID
+    env->SetStaticObjectField(clazz, f_name1, name);
+    env->SetStaticObjectField(clazz, f_name2, name);
+    env->SetStaticObjectField(clazz, f_name3, name);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_StaticCacheActivity_clearStaticCache(JNIEnv *env, jclass clazz) {
+    f_name1 = nullptr;
+    f_name2 = nullptr;
+    f_name3 = nullptr;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_ExceptionActivity_exeption(JNIEnv *env, jclass clazz) {
+    //假设现在想操作name999 没有name999就会在native层崩溃
+    jfieldID f_id = env->GetStaticFieldID(clazz, "name999", "Ljava/lang/String;");
+    //崩溃后，两种解决方案 Caused by: java.lang.NoSuchFieldError: no type "Ljava/lang/String" found and
+    // so no field "name999" could be found in class "Lcom/example/ndk/ExceptionActivity;" or its superclasses
+
+    //方案一  补救方案
+    jthrowable thr = env->ExceptionOccurred();//检测本次执行，有没有异常
+    if (thr) {
+        LOGE("C++ 层有异常检测");
+        env->ExceptionClear();//此异常清除
+        jfieldID f_id = env->GetStaticFieldID(clazz, "name1", "Ljava/lang/String;");
+    }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_ExceptionActivity_exeption2(JNIEnv *env, jclass clazz) {
+    //方案二  native捕获异常
+    jfieldID f_id = env->GetStaticFieldID(clazz, "name999", "Ljava/lang/String;");
+    jthrowable thr = env->ExceptionOccurred();//检测本次执行，有没有异常
+    if (thr) {
+        LOGE("C++ 层有异常检测");
+        env->ExceptionClear();
+        //Throw抛出一个Java的对象 java/lang/String;    java/xxx/xx/NullExxx;
+        jclass jclass1 = env->FindClass("java/lang/NoSuchFieldException");
+        env->ThrowNew(jclass1, "NoSuchFieldException 是找不到name999");
+
+    }
+}
+
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_ndk_ExceptionActivity_exeption3(JNIEnv *env, jclass clazz) {
+
+    jmethodID jmethodId = env->GetStaticMethodID(clazz, "show", "()V");
+    env->CallStaticVoidMethod(clazz, jmethodId);
+    if (env->ExceptionCheck()) {
+        env->ExceptionDescribe();//输出描述信息
+        env->ExceptionClear();
+    }
+
+
+//    env->NewStringUTF("sdasda");//局部引用 奔溃处理会被忽略
+    //这种方式 前边有调用上方方法 失效
+
+
 }

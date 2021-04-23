@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
-    private Button bt1, bt2, bt3, bt4, bt5, bt6, bt7 ,bt8;
+    private Button bt1, bt2, bt3, bt4, bt5, bt6, bt7 ,bt8,bt9,bt10;
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -54,6 +54,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         bt8 = findViewById(R.id.button8);
         bt8.setOnClickListener(this);
+
+        bt9 = findViewById(R.id.button9);
+        bt9.setOnClickListener(this);
+
+        bt10 = findViewById(R.id.button10);
+        bt10.setOnClickListener(this);
         changeName();
         changeAge();
         callAddMethod();
@@ -136,6 +142,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.button8:
                 Intent kt = new Intent(MainActivity.this, KotlinActivity.class);
                 startActivity(kt);
+                break;
+            case R.id.button9:
+                Intent ss = new Intent(MainActivity.this, StaticCacheActivity.class);
+                startActivity(ss);
+                break;
+            case R.id.button10:
+                Intent ea = new Intent(MainActivity.this, ExceptionActivity.class);
+                startActivity(ea);
                 break;
         }
     }

@@ -28,7 +28,6 @@ class KotlinActivity : AppCompatActivity() {
     var name2: String? = "T2"
     var name3: String? = "T3"
 
-    external fun initStaticCache()
 
     fun sortAction(view: View) {
         val arr = intArrayOf(12, 23, 15, 6, -4, 5)
@@ -37,6 +36,8 @@ class KotlinActivity : AppCompatActivity() {
             Log.e("Sort", " " + element)
         }
     }
+
+    fun staticCacheAction(view: View) {}
 
 
 }
